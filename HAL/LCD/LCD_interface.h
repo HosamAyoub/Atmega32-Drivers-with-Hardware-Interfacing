@@ -39,7 +39,5 @@ void LCD_voidInitialize(void);
 void LCD_voidGoToXY(u8 Copy_u8XPostion, u8 Copy_u8YPostion);
 void LCD_voidSendCustomCharacter(u8 *Copy_pu8CharacterArray, u8 Copy_u8PatternNumber, u8 Copy_u8XPostion, u8 Copy_u8YPostion);
 void LCD_voidSendString(const u8 *Copy_pu8String);
-void LCD_voidSplitNumber(s32 Copy_s32Number);
-u32 LCD_u32Power(u32 Copy_u32Base, u32 Copy_u32Power);
-
+void LCD_voidSendNumber (s32 Copy_s32Number);
 #endif

@@ -185,82 +185,27 @@ void LCD_voidSendString(const u8 *Copy_pu8String)
 	}
 }
 
-void LCD_voidSplitNumber(s32 Copy_s32Number)
+void LCD_voidSendNumber (s32 Copy_s32Number)
 {
-	s8 Local_s8Array[11], Local_s8Digits = 0;
-	s32 Local_s32Copy;
-
-	if (Copy_s32Number > 0)
+	if (Copy_s32Number == 0)
 	{
-		Local_s32Copy = Copy_s32Number;
-		while (Local_s32Copy != 0)
-		{
-			Local_s32Copy /= 10;
-			Local_s8Digits++;
-		}
+		LCD_SendData('0');
+		return;
 	}
 	else if (Copy_s32Number < 0)
 	{
-		Local_s32Copy = -Copy_s32Number;
-
-		{
-			while (Local_s32Copy != 0)
-			{
-				Local_s32Copy /= 10;
-				Local_s8Digits++;
-			}
-		}
+		LCD_SendData('-');
+		Copy_s32Number *= -1;
 	}
-	else
-	{
-		Local_s8Array[Local_s8Digits] = Copy_s32Number;
-		LCD_voidSendData(Local_s8Array[Local_s8Digits] + '0');
-	}
-
-	if (Local_s8Digits > 0)
-	{
-		if (Copy_s32Number > 0)
-		{
-			for (u8 Local_u8Iterator= 0; Local_s8Digits != 0; Local_u8Iterator++)
-			{
-				Local_s8Array[Local_u8Iterator] = Copy_s32Number / LCD_u32Power(10, Local_s8Digits-1);
-				Copy_s32Number -= Local_s8Array[Local_u8Iterator] * LCD_u32Power(10, Local_s8Digits-1);
-				Local_s8Digits--;
-				LCD_voidSendData(Local_s8Array[Local_u8Iterator] + '0');
-			}
-		}
-		else
-		{
-			u8 Local_u8Iterator= 0;
-			Local_s8Array[Local_s8Digits] = '-';
-			LCD_voidSendData(Local_s8Array[Local_s8Digits]);
-			Local_u8Iterator++;
-			Copy_s32Number = -Copy_s32Number;
-			for (; Local_s8Digits != 0; Local_u8Iterator++)
-			{
-				Local_s8Array[Local_u8Iterator] = Copy_s32Number / LCD_u32Power(10, Local_s8Digits-1);
-				Copy_s32Number -= Local_s8Array[Local_u8Iterator] * LCD_u32Power(10, Local_s8Digits-1);
-				Local_s8Digits--;
-				LCD_voidSendData(Local_s8Array[Local_u8Iterator] + '0');
-			}
-		}
-	}
-}
-
-u32 LCD_u32Power(u32 Copy_u32Base, u32 Copy_u32Power)
-{
-	u32 Local_u32Number = Copy_u32Base;
-
-	/*Covering the case if the power of number was 0*/
-	if(Copy_u32Power == 0)
-	{
-		Copy_u32Base = 1;
-	}
-
-	/*The body of power function for postive number*/
-	for(; Copy_u32Power > 1; Copy_u32Power--)
-	{
-		Copy_u32Base *= Local_u32Number;
-	}
-	return Copy_u32Base;
+	int reversed = 1;
+    while (Copy_s32Number != 0)
+    {
+    	reversed = (reversed * 10) + (Copy_s32Number % 10);
+    	Copy_s32Number /= 10;
+    }
+    while (reversed != 1)
+    {
+    	LCD_SendData(reversed%10 + '0');
+    	reversed /= 10;
+    }
 }
