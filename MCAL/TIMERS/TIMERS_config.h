@@ -15,7 +15,7 @@
  * 2- TIMER0_PWM_PHASE_CORRECT_MODE
  * 3- TIMER0_CTC_MODE
  * 4- TIMER0_FAST_PWM_MODE*/
-#define	TIMER0_MODE								TIMER0_PWM_PHASE_CORRECT_MODE
+#define	TIMER0_MODE								TIMER0_OVF_MODE
 
 /*Options Clock Prescaler:
  * 1- TIMERS_NO_CLOCK_SOURCE
@@ -32,9 +32,16 @@
  * 1- OC0_CTC_DISCONNECTED								1- OC0_PWM_DISCONNECTED
  * 2- OC0_CTC_TOGGLE									2- OC0_PWM_CLR_ON_CMP
  * 3- OC0_CTC_CLR_ON_CMP								3- OC0_PWM_SET_ON_CMP
- * 4- OC0_CTC_SET_ON_CMP*/
+ * 4- OC0_CTC_SET_ON_CMP																			*/
 #define OC0_PIN_MODE							OC0_CTC_DISCONNECTED
 
+/*Options for Interrupt OVF mode:
+ * 1- TIMER0_OVF_INTERRUPT_ON							2- TIMER0_OVF_INTERRUPT_OFF*/
+#define TIMER0_OVF_INTERRUPT					TIMER0_OVF_INTERRUPT_OFF
+
+/*Options for Interrupt CTC mode:
+ * 1- TIMER0_CTC_INTERRUPT_ON							2- TIMER0_CTC_INTERRUPT_OFF*/
+#define TIMER0_CTC_INTERRUPT					TIMER0_CTC_INTERRUPT_OFF
 
 /********************					Timer1				*********************************/
 /*Options Timer1 modes of operation:
@@ -80,6 +87,10 @@
  * 4- OC1B_CTC_SET_ON_CMP*/
 #define OC1B_PIN_MODE							OC1B_CTC_DISCONNECTED
 
+/*Options for OVF mode:
+ * 1- TIMER1_OVF_INTERRUPT_ON							2- TIMER1_OVF_INTERRUPT_OFF*/
+#define TIMER1_OVF_INTERRUPT					TIMER1_OVF_INTERRUPT_OFF
+
 
 /********************					Timer2				*********************************/
 /*Options Timer2 modes of operation:
@@ -106,5 +117,13 @@
  * 3- OC2_CTC_CLR_ON_CMP								3- OC2_PWM_SET_ON_CMP
  * 4- OC2_CTC_SET_ON_CMP*/
 #define OC2_PIN_MODE							OC2_CTC_DISCONNECTED
+
+/*Options for OVF mode:
+ * 1- TIMER2_OVF_INTERRUPT_ON							2- TIMER2_OVF_INTERRUPT_OFF*/
+#define TIMER2_OVF_INTERRUPT					TIMER2_OVF_INTERRUPT_ON
+
+/*Options for CTC mode:
+ * 1- TIMER2_CTC_INTERRUPT_ON							2- TIMER2_CTC_INTERRUPT_OFF*/
+#define TIMER2_CTC_INTERRUPT					TIMER2_CTC_INTERRUPT_OFF
 
 #endif

@@ -15,7 +15,7 @@ void TIMERS_voidTimer0SetCompareMatchValue (u8 Copy_u8CompareMatchValue);
 void TIMERS_voidTimer0SetPreloadValue (u8 Copy_u8PreloadValue);
 void TIMERS_voidTimer0CTCSetCallbackFunction (void (*Copy_pvCTCFunction) (void));
 void TIMERS_voidTimer0OVFSetCallbackFunction (void (*Copy_pvCTCFunction) (void));
-void TIMERS_voidTimer0Delay_us (f32 Copy_f32MicroSeconds);
+void TIMERS_voidTimer0Delay (u64 Copy_u64MicroSeconds, u8 Copy_u8Type);
 
 /********************			Timer1 Functions			*********************************/
 void TIMERS_voidTimer1Init (void);
@@ -48,5 +48,10 @@ void TIMERS_voidTimer2OVFSetCallbackFunction (void (*Copy_pvCTCFunction) (void))
 /*Interrupt State Options*/
 #define TIMERS_DISABLE					0
 #define TIMERS_ENABLE					1
+
+/*Delay Types Options*/
+#define TIMERS_US						0
+#define TIMERS_MS						1
+#define TIMERS_S						2
 
 #endif

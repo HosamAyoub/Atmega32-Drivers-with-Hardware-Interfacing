@@ -133,7 +133,7 @@
 #define TIMER2_CTC							    		6
 #define TIMER2_OVF							    		7
 
-#define CLOCK											8.0
+#define CLOCK											(F_CPU/1000000UL)
 
 /********************			Timer0 Configuration			*********************************/
 //Timer0 Modes of operation
@@ -154,7 +154,13 @@
 #define OC0_PWM_CLR_ON_CMP						        0b00100000
 #define OC0_PWM_SET_ON_CMP						        0b00110000
 
-#define TIMER0_MAX_VALUE						        255
+#define TIMER0_OVF_VALUE						        256
+
+//For Interrupt mode
+#define TIMER0_OVF_INTERRUPT_ON							0
+#define TIMER0_OVF_INTERRUPT_OFF						1
+#define TIMER0_CTC_INTERRUPT_ON							2
+#define TIMER0_CTC_INTERRUPT_OFF						3
 
 
 /********************			Timer1 Configuration			*********************************/
@@ -217,6 +223,9 @@
 #define OC1B_PWM_DISCONNECTED				            0b00000000
 #define OC1B_PWM_CLR_ON_CMP					            0b00100000
 #define OC1B_PWM_SET_ON_CMP					            0b00110000
+//For OVF Interrupt mode
+#define TIMER1_OVF_INTERRUPT_ON							0
+#define TIMER1_OVF_INTERRUPT_OFF						1
 
 
 /********************			Timer2 Configuration			*********************************/
@@ -248,5 +257,10 @@
 #define OC2_PWM_DISCONNECTED					        0b00000000
 #define OC2_PWM_CLR_ON_CMP						        0b00100000
 #define OC2_PWM_SET_ON_CMP						        0b00110000
+
+#define TIMER2_OVF_INTERRUPT_ON							0
+#define TIMER2_OVF_INTERRUPT_OFF						1
+#define TIMER2_CTC_INTERRUPT_ON							2
+#define TIMER2_CTC_INTERRUPT_OFF						3
 
 #endif

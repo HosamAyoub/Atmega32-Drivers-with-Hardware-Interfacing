@@ -189,12 +189,12 @@ void LCD_voidSendNumber (s32 Copy_s32Number)
 {
 	if (Copy_s32Number == 0)
 	{
-		LCD_SendData('0');
+		LCD_voidSendData('0');
 		return;
 	}
 	else if (Copy_s32Number < 0)
 	{
-		LCD_SendData('-');
+		LCD_voidSendData('-');
 		Copy_s32Number *= -1;
 	}
 	int reversed = 1;
@@ -205,7 +205,7 @@ void LCD_voidSendNumber (s32 Copy_s32Number)
     }
     while (reversed != 1)
     {
-    	LCD_SendData(reversed%10 + '0');
+    	LCD_voidSendData(reversed%10 + '0');
     	reversed /= 10;
     }
 }

@@ -24,9 +24,16 @@ void TIMERS_voidTimer0Init (void)
 		/*Set OVF mode*/
 		CLR_BIT(TCCR0, TCCR0_WGM00);
 		CLR_BIT(TCCR0, TCCR0_WGM01);
-		/*Enable OVF interrupt*/
-		SET_BIT(TIMSK, TIMSK_TOIE0);
-
+		/*Timer0 Interrupt mode*/
+		#if TIMER0_OVF_INTERRUPT == TIMER0_OVF_INTERRUPT_ON
+			/*Enable OVF interrupt*/
+			SET_BIT(TIMSK, TIMSK_TOIE0);
+		#elif TIMER0_OVF_INTERRUPT == TIMER0_OVF_INTERRUPT_OFF
+			/*Disable OVF interrupt*/
+			CLR_BIT(TIMSK, TIMSK_TOIE0);
+		#else
+			#error "Timer0_OVF_INTERRUPT Configuration Error"
+		#endif
 	#elif TIMER0_MODE == TIMER0_PWM_PHASE_CORRECT_MODE
 		/*Set OVF mode*/
 		SET_BIT(TCCR0, TCCR0_WGM00);
@@ -39,8 +46,16 @@ void TIMERS_voidTimer0Init (void)
 		/*Set CTC mode*/
 		CLR_BIT(TCCR0, TCCR0_WGM00);
 		SET_BIT(TCCR0, TCCR0_WGM01);
-		/*Enable CTC interrupt*/
-		SET_BIT(TIMSK, TIMSK_OCIE0);
+		/*Timer0 Interrupt mode*/
+		#if TIMER0_CTC_INTERRUPT == TIMER0_CTC_INTERRUPT_ON
+			/*Enable CTC interrupt*/
+			SET_BIT(TIMSK, TIMSK_OCIE0);
+		#elif TIMER0_CTC_INTERRUPT == TIMER0_CTC_INTERRUPT_OFF
+			/*Disable CTC interrupt*/
+			CLR_BIT(TIMSK, TIMSK_OCIE0);
+		#else
+			#error "Timer0_CTC_INTERRUPT Configuration Error"
+		#endif
 		/*Set mode: OC0 PIN mode*/
 		TCCR0 &= OC0_PIN_MASK;
 		TCCR0 |= OC0_PIN_MODE;
@@ -52,7 +67,8 @@ void TIMERS_voidTimer0Init (void)
 		/*Set mode: OC0 PIN mode*/
 		TCCR0 &= OC0_PIN_MASK;
 		TCCR0 |= OC0_PIN_MODE;
-	#else "Timer0_MODE Configuration Error"
+	#else
+		#error "Timer0_MODE Configuration Error"
 	#endif
 
 	/*Set Prescaler of the clock*/
@@ -80,39 +96,56 @@ void TIMERS_voidTimer0OVFSetCallbackFunction (void (*Copy_pvCTCFunction) (void))
 	Global_pvArrayFunction[TIMER0_OVF] = Copy_pvCTCFunction;
 }
 
-void TIMERS_voidTimer0Delay_us (f32 Copy_f32MicroSeconds)
+void TIMERS_voidTimer0Delay (u64 Copy_u64Delay, u8 Copy_u8Type)
 {
-	#if TIMER0_MODE == TIMER0_CTC_MODE || TIMER0_MODE == TIMER0_OVF_MODE
+	//Check Delay Type
+	if (Copy_u8Type == TIMERS_MS)
+	{
+		Copy_u64Delay *= 1000;
+	}
+	else if (Copy_u8Type == TIMERS_S)
+	{
+		Copy_u64Delay *= 1000000;
+	}
+	//Check if the user work in the correct mode or not
+	#if ((TIMER0_MODE == TIMER0_CTC_MODE) || (TIMER0_MODE == TIMER0_OVF_MODE))
 		f32 Local_f32TickTime, Local_f32OVFNumbers = 0;
-		u8 Local_u8Value = TIMER0_MAX_VALUE;
+		u8 Local_u8Value = TIMER0_OVF_VALUE - 1;
 		u32 Local_u32OVFNumbersInteger = 0, Local_u32OverflowTime;
+
+		//Calculate the tick time
 		#if TIMER0_PRESCALER == TIMERS_PRESCALER_DIV_BY_1
-			Local_f32TickTime = 1 / CLOCK;
+			Local_f32TickTime = 1.0 / CLOCK;
 		#elif TIMER0_PRESCALER == TIMERS_PRESCALER_DIV_BY_8
-			Local_f32TickTime = 8 / CLOCK;
+			Local_f32TickTime = 8.0 / CLOCK;
 		#elif TIMER0_PRESCALER == TIMERS_PRESCALER_DIV_BY_64
-			Local_f32TickTime = 64 / CLOCK;
+			Local_f32TickTime = 64.0 / CLOCK;
 		#elif TIMER0_PRESCALER == TIMERS_PRESCALER_DIV_BY_256
-			Local_f32TickTime = 256 / CLOCK;
+			Local_f32TickTime = 256.0 / CLOCK;
 		#elif TIMER0_PRESCALER == TIMERS_PRESCALER_DIV_BY_1024
-			Local_f32TickTime = 1024 / CLOCK;
+			Local_f32TickTime = 1024.0 / CLOCK;
 		#endif
-		Local_u32OverflowTime = Local_f32TickTime * (TIMER0_MAX_VALUE + 1);
-		if (Copy_f32MicroSeconds <= Local_f32TickTime)
+		//Calculate the overflow Time
+		Local_u32OverflowTime = Local_f32TickTime * (TIMER0_OVF_VALUE);
+		//Check if the delay is less the tick time
+		if (Copy_u64Delay <= Local_f32TickTime)
 		{
 			Local_u8Value = 1;
 		}
-		else if ((Copy_f32MicroSeconds > Local_f32TickTime) && (Copy_f32MicroSeconds <= Local_u32OverflowTime))
+		//Check if the delay is more the tick time and less than or equal the over flow time
+		else if ((Copy_u64Delay > Local_f32TickTime) && (Copy_u64Delay <= Local_u32OverflowTime))
 		{
-			Local_u8Value = Copy_f32MicroSeconds / Local_f32TickTime;
+			Local_u8Value = Copy_u64Delay / Local_f32TickTime;
 			Local_u32OVFNumbersInteger = 1;
 		}
-		else if (Copy_f32MicroSeconds > Local_u32OverflowTime)
+		//Check if the delay more than the over flow time
+		else if (Copy_u64Delay > Local_u32OverflowTime)
 		{
-			Local_f32OVFNumbers = (Copy_f32MicroSeconds / ((Local_u8Value + 1) * Local_f32TickTime));
+			Local_f32OVFNumbers = (Copy_u64Delay / ((TIMER0_OVF_VALUE) * Local_f32TickTime));
 			Local_u32OVFNumbersInteger = (u32)(Local_f32OVFNumbers);
 			Local_f32OVFNumbers -= Local_u32OVFNumbersInteger;
 		}
+		//Calculations for CTC Mode
 		#if TIMER0_MODE == TIMER0_CTC_MODE
 			TIMERS_voidTimer0SetCompareMatchValue(Local_u8Value);
 			TIMERS_voidTimer0Init();
@@ -121,24 +154,23 @@ void TIMERS_voidTimer0Delay_us (f32 Copy_f32MicroSeconds)
 				while (GET_BIT(TIFR, TIFR_OCF0) == 0);
 				SET_BIT(TIFR, TIFR_OCF0);
 			}
-			Local_u8Value = Local_f32OVFNumbers * (TIMER0_MAX_VALUE + 1);
+			Local_u8Value = Local_f32OVFNumbers * (TIMER0_OVF_VALUE);
 			TIMERS_voidTimer0SetCompareMatchValue(Local_u8Value);
 			while (GET_BIT(TIFR, TIFR_OCF0) == 0);
 			SET_BIT(TIFR, TIFR_OCF0);
+		//Calculations for OVF Mode
 		#elif TIMER0_MODE == TIMER0_OVF_MODE
+			Local_u8Value = (TIMER0_OVF_VALUE) * (1 - Local_f32OVFNumbers);
+			TIMERS_voidTimer0SetPreloadValue(Local_u8Value);
 			TIMERS_voidTimer0Init();
-			for (u32 Local_u32Iterator = 0; Local_u32Iterator < Local_u32OVFNumbersInteger; Local_u32Iterator++)
+			for (u32 Local_u32Iterator = 0; Local_u32Iterator <= Local_u32OVFNumbersInteger; Local_u32Iterator++)
 			{
 				while (GET_BIT(TIFR, TIFR_TOV0) == 0);
 				SET_BIT(TIFR, TIFR_TOV0);
 			}
-			Local_u8Value = 256 - (Local_f32OVFNumbers * (TIMER0_MAX_VALUE + 1));
-			TIMERS_voidTimer0SetPreloadValue(Local_u8Value);
-			while (GET_BIT(TIFR, TIFR_TOV0) == 0);
-			SET_BIT(TIFR, TIFR_TOV0);
 		#endif
-	#elif
-		#error "Wrong operation mode"
+	#else
+		#warning "The Delay function of Timer0 won't work"
 	#endif
 }
 
@@ -176,6 +208,7 @@ void TIMERS_voidTimer1Init (void)
 	/*Set mode of operation*/
 	TCCR1 &= TIMER1_MODE_MASK;
 	TCCR1 |= TIMER1_MODE;
+	/*Timer1 Interrupt mode*/
 	#if TIMER1_MODE != TIMER1_OVF_MODE
 		/*Set mode: OC1A PIN mode*/
 		TCCR1A &= OC1A_PIN_MASK;
@@ -184,9 +217,17 @@ void TIMERS_voidTimer1Init (void)
 		TCCR1A &= OC1B_PIN_MASK;
 		TCCR1A |= OC1B_PIN_MODE;
 	#elif TIMER1_MODE == TIMER1_OVF_MODE
-		/*Enable OVF interrupt*/
-		SET_BIT(TIMSK, TIMSK_TOIE1);
-	#else "Timer1_MODE Configuration Error"
+        #if TIMER1_OVF_INTERRUPT == TIMER1_OVF_INTERRUPT_ON
+        	/*Enable OVF interrupt*/
+        	SET_BIT(TIMSK, TIMSK_TOIE1);
+        #elif TIMER1_OVF_INTERRUPT == TIMER1_OVF_INTERRUPT_OFF
+        	/*Disable OVF interrupt*/
+        	CLR_BIT(TIMSK, TIMSK_TOIE1);
+        #else
+        	#error "Timer1_OVF_INTERRUPT Configuration Error"
+        #endif
+	#else
+		#error "Timer1_MODE Configuration Error"
 	#endif
 	/*Set Prescaler of the clock*/
 	TCCR1B &= TIMERS_PRESCALER_MASK;
@@ -376,9 +417,16 @@ void TIMERS_voidTimer2Init (void)
 		/*Set OVF mode*/
 		CLR_BIT(TCCR2, TCCR2_WGM20);
 		CLR_BIT(TCCR2, TCCR2_WGM21);
-		/*Enable OVF interrupt*/
-		SET_BIT(TIMSK, TIMSK_TOIE2);
-
+		/*Timer2 Interrupt mode*/
+        #if TIMER2_OVF_INTERRUPT == TIMER2_OVF_INTERRUPT_ON
+        	/*Enable OVF interrupt*/
+        	SET_BIT(TIMSK, TIMSK_TOIE2);
+        #elif TIMER2_OVF_INTERRUPT == TIMER2_OVF_INTERRUPT_OFF
+        	/*Disable OVF interrupt*/
+        	CLR_BIT(TIMSK, TIMSK_TOIE2);
+        #else
+        	#error "Timer2_OVF_INTERRUPT Configuration Error"
+        #endif
 	#elif TIMER2_MODE == TIMER2_PWM_PHASE_CORRECT_MODE
 		/*Set OVF mode*/
 		SET_BIT(TCCR2, TCCR2_WGM20);
@@ -391,8 +439,16 @@ void TIMERS_voidTimer2Init (void)
 		/*Set CTC mode*/
 		CLR_BIT(TCCR2, TCCR2_WGM20);
 		SET_BIT(TCCR2, TCCR2_WGM21);
-		/*Enable CTC interrupt*/
-		SET_BIT(TIMSK, TIMSK_OCIE2);
+		/*Timer2 Interrupt mode*/
+        #if TIMER2_CTC_INTERRUPT == TIMER2_CTC_INTERRUPT_ON
+        	/*Enable CTC interrupt*/
+        	SET_BIT(TIMSK, TIMSK_OCIE2);
+        #elif TIMER2_CTC_INTERRUPT == TIMER2_CTC_INTERRUPT_OFF
+        	/*Disable CTC interrupt*/
+        	CLR_BIT(TIMSK, TIMSK_OCIE2);
+        #else
+        	#error "Timer2_CTC_INTERRUPT Configuration Error"
+        #endif
 		/*Set mode: OC2 PIN mode*/
 		TCCR2 &= OC2_PIN_MASK;
 		TCCR2 |= OC2_PIN_MODE;
@@ -404,7 +460,8 @@ void TIMERS_voidTimer2Init (void)
 		/*Set mode: OC2 PIN mode*/
 		TCCR2 &= OC2_PIN_MASK;
 		TCCR2 |= OC2_PIN_MODE;
-	#else "Timer2_MODE Configuration Error"
+	#else
+		#error "Timer2_MODE Configuration Error"
 	#endif
 
 	/*Set Prescaler of the clock*/
