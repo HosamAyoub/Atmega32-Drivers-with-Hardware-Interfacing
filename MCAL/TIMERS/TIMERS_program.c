@@ -6,12 +6,7 @@
 /********************			Version: 1.00				*********************************/
 /********************************************************************************************/
 /********************************************************************************************/
-#include "../../LIB/STD_TYPES.h"
-#include "../../LIB/BIT_MATH.h"
 #include "TIMERS_interface.h"
-#include "TIMERS_private.h"
-#include "TIMERS_config.h"
-#include "../DIO/DIO_interface.h"
 
 /*Array of pointers to function*/
 static void (*Global_pvArrayFunction[ARRAY_SIZE])(void) = {NULL};
@@ -76,36 +71,100 @@ void TIMERS_voidTimer0Init (void)
 	TCCR0 |= TIMER0_PRESCALER;
 }
 
-void TIMERS_voidTimer0SetCompareMatchValue (u8 Copy_u8CompareMatchValue)
+u8 TIMERS_u8Timer0SetCompareMatchValue (u8 Copy_u8CompareMatchValue)
 {
-	OCR0 = Copy_u8CompareMatchValue;
+	if (Copy_u8CompareMatchValue < 256)
+	{
+		OCR0 = Copy_u8CompareMatchValue;
+		return OK;
+	}
+	else
+	{
+		return ERROR;
+	}
 }
 
-void TIMERS_voidTimer0SetPreloadValue (u8 Copy_u8PreloadValue)
+u8 TIMERS_u8Timer0SetPreloadValue (u8 Copy_u8PreloadValue)
 {
-	TCNT0 = Copy_u8PreloadValue;
+	if (Copy_u8PreloadValue < 256)
+	{
+		TCNT0 = Copy_u8PreloadValue;
+		return OK;
+	}
+	else
+	{
+		return ERROR;
+	}
 }
 
-void TIMERS_voidTimer0CTCSetCallbackFunction (void (*Copy_pvCTCFunction) (void))
+u8 TIMERS_u8Timer0CTCSetCallbackFunction (void (*Copy_pvCTCFunction) (void))
 {
-	Global_pvArrayFunction[TIMER0_CTC] = Copy_pvCTCFunction;
+	if (Copy_pvCTCFunction != NULL)
+	{
+		Global_pvArrayFunction[TIMER0_CTC] = Copy_pvCTCFunction;
+		return OK;
+	}
+	else
+	{
+		return ERROR;
+	}
 }
 
-void TIMERS_voidTimer0OVFSetCallbackFunction (void (*Copy_pvCTCFunction) (void))
+u8 TIMERS_u8Timer0OVFSetCallbackFunction (void (*Copy_pvOVFFunction) (void))
 {
-	Global_pvArrayFunction[TIMER0_OVF] = Copy_pvCTCFunction;
+	if (Copy_pvOVFFunction != NULL)
+	{
+	Global_pvArrayFunction[TIMER0_OVF] = Copy_pvOVFFunction;
+		return OK;
+	}
+	else
+	{
+		return ERROR;
+	}
 }
 
-void TIMERS_voidTimer0Delay (u64 Copy_u64Delay, u8 Copy_u8Type)
+u8 TIMERS_u8Timer0Delay (u32 Copy_u32Delay, u8 Copy_u8Type)
 {
 	//Check Delay Type
-	if (Copy_u8Type == TIMERS_MS)
+	if (Copy_u8Type == TIMERS_US)
 	{
-		Copy_u64Delay *= 1000;
+		if (Copy_u32Delay < 51)
+		{
+			return OK;
+		}
+		else if (Copy_u32Delay < 701)
+		{
+			Copy_u32Delay = 0;
+		}
+		else if (Copy_u32Delay < 2000)
+		{
+			Copy_u32Delay = 1;
+		}
+		else
+		{
+			Copy_u32Delay -= 1900;
+		}
+	}
+	else if (Copy_u8Type == TIMERS_MS)
+	{
+		Copy_u32Delay *= 1000;
+		if (Copy_u32Delay < 2000)
+		{
+			Copy_u32Delay = 1;
+		}
+		else
+		{
+			Copy_u32Delay -= 1900;
+		}
 	}
 	else if (Copy_u8Type == TIMERS_S)
 	{
-		Copy_u64Delay *= 1000000;
+		Copy_u32Delay *= 1000000;
+		Copy_u32Delay -= 1900;
+	}
+	else
+	{
+		return ERROR;
 	}
 	//Check if the user work in the correct mode or not
 	#if ((TIMER0_MODE == TIMER0_CTC_MODE) || (TIMER0_MODE == TIMER0_OVF_MODE))
@@ -128,26 +187,27 @@ void TIMERS_voidTimer0Delay (u64 Copy_u64Delay, u8 Copy_u8Type)
 		//Calculate the overflow Time
 		Local_u32OverflowTime = Local_f32TickTime * (TIMER0_OVF_VALUE);
 		//Check if the delay is less the tick time
-		if (Copy_u64Delay <= Local_f32TickTime)
+		if (Copy_u32Delay <= Local_f32TickTime)
 		{
 			Local_u8Value = 1;
+			return OK;
 		}
 		//Check if the delay is more the tick time and less than or equal the over flow time
-		else if ((Copy_u64Delay > Local_f32TickTime) && (Copy_u64Delay <= Local_u32OverflowTime))
+		else if ((Copy_u32Delay > Local_f32TickTime) && (Copy_u32Delay <= Local_u32OverflowTime))
 		{
-			Local_u8Value = Copy_u64Delay / Local_f32TickTime;
+			Local_u8Value = Copy_u32Delay / Local_f32TickTime;
 			Local_u32OVFNumbersInteger = 1;
 		}
 		//Check if the delay more than the over flow time
-		else if (Copy_u64Delay > Local_u32OverflowTime)
+		else if (Copy_u32Delay > Local_u32OverflowTime)
 		{
-			Local_f32OVFNumbers = (Copy_u64Delay / ((TIMER0_OVF_VALUE) * Local_f32TickTime));
+			Local_f32OVFNumbers = (Copy_u32Delay / ((TIMER0_OVF_VALUE) * Local_f32TickTime));
 			Local_u32OVFNumbersInteger = (u32)(Local_f32OVFNumbers);
 			Local_f32OVFNumbers -= Local_u32OVFNumbersInteger;
 		}
 		//Calculations for CTC Mode
 		#if TIMER0_MODE == TIMER0_CTC_MODE
-			TIMERS_voidTimer0SetCompareMatchValue(Local_u8Value);
+			TIMERS_u8Timer0SetCompareMatchValue(Local_u8Value);
 			TIMERS_voidTimer0Init();
 			for (u32 Local_u32Iterator = 0; Local_u32Iterator < Local_u32OVFNumbersInteger; Local_u32Iterator++)
 			{
@@ -155,13 +215,13 @@ void TIMERS_voidTimer0Delay (u64 Copy_u64Delay, u8 Copy_u8Type)
 				SET_BIT(TIFR, TIFR_OCF0);
 			}
 			Local_u8Value = Local_f32OVFNumbers * (TIMER0_OVF_VALUE);
-			TIMERS_voidTimer0SetCompareMatchValue(Local_u8Value);
+			TIMERS_u8Timer0SetCompareMatchValue(Local_u8Value);
 			while (GET_BIT(TIFR, TIFR_OCF0) == 0);
 			SET_BIT(TIFR, TIFR_OCF0);
 		//Calculations for OVF Mode
 		#elif TIMER0_MODE == TIMER0_OVF_MODE
 			Local_u8Value = (TIMER0_OVF_VALUE) * (1 - Local_f32OVFNumbers);
-			TIMERS_voidTimer0SetPreloadValue(Local_u8Value);
+			TIMERS_u8Timer0SetPreloadValue(Local_u8Value);
 			TIMERS_voidTimer0Init();
 			for (u32 Local_u32Iterator = 0; Local_u32Iterator <= Local_u32OVFNumbersInteger; Local_u32Iterator++)
 			{
@@ -169,6 +229,7 @@ void TIMERS_voidTimer0Delay (u64 Copy_u64Delay, u8 Copy_u8Type)
 				SET_BIT(TIFR, TIFR_TOV0);
 			}
 		#endif
+		return OK;
 	#else
 		#warning "The Delay function of Timer0 won't work"
 	#endif
@@ -336,24 +397,24 @@ void TIMERS_voidTimer1ICUInterruptControl (u8 Copy_u8InterruptState)
 	}
 }
 
-void TIMERS_voidTimer1ICUSetCallbackFunction (void (*Copy_pvCTCFunction) (void))
+void TIMERS_voidTimer1ICUSetCallbackFunction (void (*Copy_pvICUFunction) (void))
 {
-	Global_pvArrayFunction[TIMER1_ICU] = Copy_pvCTCFunction;
+	Global_pvArrayFunction[TIMER1_ICU] = Copy_pvICUFunction;
 }
 
-void TIMERS_voidTimer1CTCASetCallbackFunction (void (*Copy_pvCTCFunction) (void))
+void TIMERS_voidTimer1CTCASetCallbackFunction (void (*Copy_pvCTCAFunction) (void))
 {
-	Global_pvArrayFunction[TIMER1_CTCA] = Copy_pvCTCFunction;
+	Global_pvArrayFunction[TIMER1_CTCA] = Copy_pvCTCAFunction;
 }
 
-void TIMERS_voidTimer1CTCBSetCallbackFunction (void (*Copy_pvCTCFunction) (void))
+void TIMERS_voidTimer1CTCBSetCallbackFunction (void (*Copy_pvCTCBFunction) (void))
 {
-	Global_pvArrayFunction[TIMER1_CTCB] = Copy_pvCTCFunction;
+	Global_pvArrayFunction[TIMER1_CTCB] = Copy_pvCTCBFunction;
 }
 
-void TIMERS_voidTimer1OVFSetCallbackFunction (void (*Copy_pvCTCFunction) (void))
+void TIMERS_voidTimer1OVFSetCallbackFunction (void (*Copy_pvOVFFunction) (void))
 {
-	Global_pvArrayFunction[TIMER1_OVF] = Copy_pvCTCFunction;
+	Global_pvArrayFunction[TIMER1_OVF] = Copy_pvOVFFunction;
 }
 
 void __vector_6 (void) __attribute__((signal));

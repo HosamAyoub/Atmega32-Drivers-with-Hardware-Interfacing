@@ -6,14 +6,7 @@
 /********************			Version: 1.00				*********************************/
 /********************************************************************************************/
 /********************************************************************************************/
-#include "../../LIB/STD_TYPES.h"
-#include "../../LIB/BIT_MATH.h"
 #include "EXTI_interface.h"
-#include "EXTI_private.h"
-#include "EXTI_config.h"
-#include "../DIO/DIO_interface.h"
-#define F_CPU 8000000UL
-#include <util/delay.h>
 
 static void (*Global_pvInt0NotifcationFunction)(void) = NULL;
 static void (*Global_pvInt1NotifcationFunction)(void) = NULL;
@@ -87,43 +80,44 @@ void EXTI_voidInit (void)
 }
 
 
-void EXTI_voidSetInt0SenseControl (u8 Copy_u8SenseControl)
+u8 EXTI_u8SetInt0SenseControl (u8 Copy_u8SenseControl)
 {
 	switch (Copy_u8SenseControl)
 	{
-	case LOW_LEVEL:
-	{
-		CLR_BIT(MCUCR, MCUCR_ISC01);
-		CLR_BIT(MCUCR, MCUCR_ISC00);
-		break;
-	}
-	case ON_CHANGE:
-	{
-		CLR_BIT(MCUCR, MCUCR_ISC01);
-		SET_BIT(MCUCR, MCUCR_ISC00);
-		break;
-	}
-	case FALLING_EDGE:
-	{
-		SET_BIT(MCUCR, MCUCR_ISC01);
-		CLR_BIT(MCUCR, MCUCR_ISC00);
-		break;
-	}
-	case RISING_EDGE:
-	{
-		SET_BIT(MCUCR, MCUCR_ISC01);
-		SET_BIT(MCUCR, MCUCR_ISC00);
-		break;
-	}
-	default:
-	{
-		break;
-	}
+		case LOW_LEVEL:
+		{
+			CLR_BIT(MCUCR, MCUCR_ISC01);
+			CLR_BIT(MCUCR, MCUCR_ISC00);
+			break;
+		}
+		case ON_CHANGE:
+		{
+			CLR_BIT(MCUCR, MCUCR_ISC01);
+			SET_BIT(MCUCR, MCUCR_ISC00);
+			break;
+		}
+		case FALLING_EDGE:
+		{
+			SET_BIT(MCUCR, MCUCR_ISC01);
+			CLR_BIT(MCUCR, MCUCR_ISC00);
+			break;
+		}
+		case RISING_EDGE:
+		{
+			SET_BIT(MCUCR, MCUCR_ISC01);
+			SET_BIT(MCUCR, MCUCR_ISC00);
+			break;
+		}
+		default:
+		{
+			return ERROR;
+		}
 	}
 	SET_BIT(GICR, GICR_INT0);
+	return OK;
 }
 
-void EXTI_voidSetInt1SenseControl(u8 Copy_u8SenseControl)
+u8 EXTI_u8SetInt1SenseControl(u8 Copy_u8SenseControl)
 {
 	switch (Copy_u8SenseControl)
 	{
@@ -153,13 +147,14 @@ void EXTI_voidSetInt1SenseControl(u8 Copy_u8SenseControl)
 	}
 	default:
 	{
-		break;
+		return ERROR;
 	}
 	}
 	SET_BIT(GICR, GICR_INT1);
+	return OK;
 }
 
-void EXTI_voidSetInt2SenseControl(u8 Copy_u8SenseControl)
+u8 EXTI_u8SetInt2SenseControl(u8 Copy_u8SenseControl)
 {
 	switch (Copy_u8SenseControl)
 	{
@@ -175,16 +170,25 @@ void EXTI_voidSetInt2SenseControl(u8 Copy_u8SenseControl)
 	}
 	default:
 	{
-		break;
+		return ERROR;
 	}
 	}
 	SET_BIT(GICR, GICR_INT2);
+	return OK;
 }
 
 
-void EXTI_voidInt0SetCallBack (void (*Copy_pvNotificationFunction) (void))
+u8 EXTI_u8Int0SetCallBack (void (*Copy_pvNotificationFunction) (void))
 {
-	Global_pvInt0NotifcationFunction = Copy_pvNotificationFunction;
+	if (Copy_pvNotificationFunction != NULL)
+	{
+		Global_pvInt0NotifcationFunction = Copy_pvNotificationFunction;
+		return OK;
+	}
+	else
+	{
+		return ERROR;
+	}
 }
 
 /*ISR for INT0*/
@@ -197,13 +201,21 @@ void __vector_1 (void)
 	}
 	else
 	{
-
+		/*Do nothing*/
 	}
 }
 
-void EXTI_voidInt1SetCallBack (void (*Copy_pvNotificationFunction) (void))
+u8 EXTI_u8Int1SetCallBack (void (*Copy_pvNotificationFunction) (void))
 {
-	Global_pvInt1NotifcationFunction = Copy_pvNotificationFunction;
+	if (Copy_pvNotificationFunction != NULL)
+	{
+		Global_pvInt1NotifcationFunction = Copy_pvNotificationFunction;
+		return OK;
+	}
+	else
+	{
+		return ERROR;
+	}
 }
 
 /*ISR for INT1*/
@@ -216,13 +228,21 @@ void __vector_2 (void)
 	}
 	else
 	{
-
+		/*Do nothing*/
 	}
 }
 
-void EXTI_voidInt2SetCallBack (void (*Copy_pvNotificationFunction) (void))
+u8 EXTI_u8Int2SetCallBack (void (*Copy_pvNotificationFunction) (void))
 {
-	Global_pvInt2NotifcationFunction = Copy_pvNotificationFunction;
+	if (Copy_pvNotificationFunction != NULL)
+	{
+		Global_pvInt2NotifcationFunction = Copy_pvNotificationFunction;
+		return OK;
+	}
+	else
+	{
+		return ERROR;
+	}
 }
 
 /*ISR for INT2*/
@@ -235,6 +255,6 @@ void __vector_3 (void)
 	}
 	else
 	{
-
+		/*Do nothing*/
 	}
 }

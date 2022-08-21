@@ -11,6 +11,6 @@
  * 1- SOURCE
  * 2- SINK
  * */
-#define CONNECTION_TYPE						SINK
+#define CONNECTION_TYPE						SOURCE
 
-#define NUMBER_OF_LEDS						12
+#define NUMBER_OF_LEDS						6
