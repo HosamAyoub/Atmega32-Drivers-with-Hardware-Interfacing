@@ -135,6 +135,9 @@
 
 #define CLOCK											(F_CPU/1000000UL)
 
+#define SECONDS_SCALE									1000000
+#define MILLI_SECONDS_SCAL								1000
+
 /********************			Timer0 Configuration			*********************************/
 //Timer0 Modes of operation
 #define TIMER0_OVF_MODE									0
@@ -161,6 +164,9 @@
 #define TIMER0_OVF_INTERRUPT_OFF						1
 #define TIMER0_CTC_INTERRUPT_ON							2
 #define TIMER0_CTC_INTERRUPT_OFF						3
+
+//For Delay function
+#define TIMER0_INSTRUCTIONS_TIME							1900
 
 
 /********************			Timer1 Configuration			*********************************/

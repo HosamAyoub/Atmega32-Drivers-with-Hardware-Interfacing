@@ -9,16 +9,10 @@
 #ifndef TIMERS_INTERFACE_H
 #define TIMERS_INTERFACE_H
 
-#include "../../Utilities/BIT_MATH.h"
-#include "../../Utilities/STD_TYPES.h"
-#include "../DIO/DIO_interface.h"
-#include "TIMERS_private.h"
-#include "TIMERS_config.h"
-
 /********************			Timer0 Functions			*********************************/
-/* This function is responsible for set the EXTI settings pre-build configuration */
+/* This function is responsible for set the Timer0 settings pre-build configuration */
 void TIMERS_voidTimer0Init (void);
-/* This function sets the compare match value of the CTC Mode
+/* This function sets the compare match value of the CTC Mode for Timer0
  * Arguments: compare match value (0 : 255)
  * Returns: Error states (OK - ERROR) */
 u8 TIMERS_u8Timer0SetCompareMatchValue (u8 Copy_u8CompareMatchValue);
@@ -26,7 +20,7 @@ u8 TIMERS_u8Timer0SetCompareMatchValue (u8 Copy_u8CompareMatchValue);
  * Arguments: Preload value (0 : 255)
  * Returns: Error states (OK - ERROR) */
 u8 TIMERS_u8Timer0SetPreloadValue (u8 Copy_u8PreloadValue);
-/* These are the call back functions for all Timers modes
+/* These are the call back functions for all Timer0 modes
  * Arguments: pointer to function which will be called in the ISR
  * Returns: Error states (OK - ERROR) */
 u8 TIMERS_u8Timer0CTCSetCallbackFunction (void (*Copy_pvCTCFunction) (void));
@@ -53,11 +47,21 @@ void TIMERS_voidTimer1CTCBSetCallbackFunction (void (*Copy_pvCTCBFunction) (void
 void TIMERS_voidTimer1OVFSetCallbackFunction (void (*Copy_pvOVFFunction) (void));
 
 /********************			Timer2 Functions			*********************************/
+/* This function is responsible for set the Timer2 settings pre-build configuration */
 void TIMERS_voidTimer2Init (void);
-void TIMERS_voidTimer2SetCompareMatchValue (u8 Copy_u8CompareMatchValue);
-void TIMERS_voidTimer2SetPreloadValue (u8 Copy_u8PreloadValue);
-void TIMERS_voidTimer2CTCSetCallbackFunction (void (*Copy_pvCTCFunction) (void));
-void TIMERS_voidTimer2OVFSetCallbackFunction (void (*Copy_pvCTCFunction) (void));
+/* This function sets the compare match value of the CTC Mode for Timer2
+ * Arguments: compare match value (0 : 255)
+ * Returns: Error states (OK - ERROR) */
+u8 TIMERS_u8Timer2SetCompareMatchValue (u8 Copy_u8CompareMatchValue);
+/* This function sets the pre-load value of the OVF Mode for Timer2
+ * Arguments: Preload value (0 : 255)
+ * Returns: Error states (OK - ERROR) */
+u8 TIMERS_u8Timer2SetPreloadValue (u8 Copy_u8PreloadValue);
+/* These are the call back functions for all Timer2 modes
+ * Arguments: pointer to function which will be called in the ISR
+ * Returns: Error states (OK - ERROR) */
+u8 TIMERS_u8Timer2CTCSetCallbackFunction (void (*Copy_pvCTCFunction) (void));
+u8 TIMERS_u8Timer2OVFSetCallbackFunction (void (*Copy_pvCTCFunction) (void));
 
 
 /*Timer1 ICU Sense Control Options*/

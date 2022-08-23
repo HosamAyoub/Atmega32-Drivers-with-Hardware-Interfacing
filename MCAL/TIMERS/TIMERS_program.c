@@ -6,7 +6,12 @@
 /********************			Version: 1.00				*********************************/
 /********************************************************************************************/
 /********************************************************************************************/
+#include "../../LIB/BIT_MATH.h"
+#include "../../LIB/STD_TYPES.h"
+#include "../DIO/DIO_interface.h"
 #include "TIMERS_interface.h"
+#include "TIMERS_private.h"
+#include "TIMERS_config.h"
 
 /*Array of pointers to function*/
 static void (*Global_pvArrayFunction[ARRAY_SIZE])(void) = {NULL};
@@ -114,7 +119,7 @@ u8 TIMERS_u8Timer0OVFSetCallbackFunction (void (*Copy_pvOVFFunction) (void))
 {
 	if (Copy_pvOVFFunction != NULL)
 	{
-	Global_pvArrayFunction[TIMER0_OVF] = Copy_pvOVFFunction;
+		Global_pvArrayFunction[TIMER0_OVF] = Copy_pvOVFFunction;
 		return OK;
 	}
 	else
@@ -142,25 +147,25 @@ u8 TIMERS_u8Timer0Delay (u32 Copy_u32Delay, u8 Copy_u8Type)
 		}
 		else
 		{
-			Copy_u32Delay -= 1900;
+			Copy_u32Delay -= TIMER0_INSTRUCTIONS_TIME;
 		}
 	}
 	else if (Copy_u8Type == TIMERS_MS)
 	{
-		Copy_u32Delay *= 1000;
+		Copy_u32Delay *= MILLI_SECONDS_SCAL;
 		if (Copy_u32Delay < 2000)
 		{
 			Copy_u32Delay = 1;
 		}
 		else
 		{
-			Copy_u32Delay -= 1900;
+			Copy_u32Delay -= TIMER0_INSTRUCTIONS_TIME;
 		}
 	}
 	else if (Copy_u8Type == TIMERS_S)
 	{
-		Copy_u32Delay *= 1000000;
-		Copy_u32Delay -= 1900;
+		Copy_u32Delay *= SECONDS_SCALE;
+		Copy_u32Delay -= TIMER0_INSTRUCTIONS_TIME;
 	}
 	else
 	{
@@ -189,7 +194,6 @@ u8 TIMERS_u8Timer0Delay (u32 Copy_u32Delay, u8 Copy_u8Type)
 		//Check if the delay is less the tick time
 		if (Copy_u32Delay <= Local_f32TickTime)
 		{
-			Local_u8Value = 1;
 			return OK;
 		}
 		//Check if the delay is more the tick time and less than or equal the over flow time
@@ -530,24 +534,56 @@ void TIMERS_voidTimer2Init (void)
 	TCCR2 |= TIMER2_PRESCALER;
 }
 
-void TIMERS_voidTimer2SetCompareMatchValue (u8 Copy_u8CompareMatchValue)
+u8 TIMERS_u8Timer2SetCompareMatchValue (u8 Copy_u8CompareMatchValue)
 {
-	OCR2 = Copy_u8CompareMatchValue;
+	if (Copy_u8CompareMatchValue < 256)
+	{
+		OCR2 = Copy_u8CompareMatchValue;
+		return OK;
+	}
+	else
+	{
+		return ERROR;
+	}
 }
 
-void TIMERS_voidTimer2SetPreloadValue (u8 Copy_u8PreloadValue)
+u8 TIMERS_u8Timer2SetPreloadValue (u8 Copy_u8PreloadValue)
 {
-	TCNT2 = Copy_u8PreloadValue;
+	if (Copy_u8PreloadValue < 256)
+	{
+		TCNT2 = Copy_u8PreloadValue;
+		return OK;
+	}
+	else
+	{
+		return ERROR;
+	}
 }
 
-void TIMERS_voidTimer2CTCSetCallbackFunction (void (*Copy_pvCTCFunction) (void))
+u8 TIMERS_u8Timer2CTCSetCallbackFunction (void (*Copy_pvCTCFunction) (void))
 {
-	Global_pvArrayFunction[TIMER2_CTC] = Copy_pvCTCFunction;
+	if (Copy_pvCTCFunction != NULL)
+	{
+		Global_pvArrayFunction[TIMER2_CTC] = Copy_pvCTCFunction;
+		return OK;
+	}
+	else
+	{
+		return ERROR;
+	}
 }
 
-void TIMERS_voidTimer2OVFSetCallbackFunction (void (*Copy_pvCTCFunction) (void))
+u8 TIMERS_u8Timer2OVFSetCallbackFunction (void (*Copy_pvOVFFunction) (void))
 {
-	Global_pvArrayFunction[TIMER2_OVF] = Copy_pvCTCFunction;
+	if (Copy_pvOVFFunction != NULL)
+	{
+		Global_pvArrayFunction[TIMER2_OVF] = Copy_pvOVFFunction;
+		return OK;
+	}
+	else
+	{
+		return ERROR;
+	}
 }
 
 void __vector_4 (void) __attribute__((signal));
