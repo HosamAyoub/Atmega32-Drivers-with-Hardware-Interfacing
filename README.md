@@ -10,7 +10,7 @@ This repo contains the interface components written in full software layered arc
 | MCAL | Contains the internal hardware or peripherals |
 
 Every layer can call the drivers from the under layers or the same layer but can't call drivers from the above layer.
-> Note: there is a folder called **LIB** (Library) this folder contains utilities or files that will be used in all layers like the standard data types or bit manipulation.
+> There is a folder called **LIB** (Library) this folder contains utilities or files that will be used in all layers like the standard data types or bit manipulation.
 
 ## Driver Structure
 Every driver has 4 files `interface.h` `config.h` `private.h` `program.c`
