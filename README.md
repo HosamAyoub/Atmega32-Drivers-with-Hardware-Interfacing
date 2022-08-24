@@ -1,4 +1,4 @@
-# Hardware Interfacing
+# Hardware Interfacing with ATmega32
 This repo contains the interface components written in full software layered architecture with configurable settings drivers without any built-in library.
 
 ##Sofware Layered Architecture
@@ -45,3 +45,6 @@ Every driver has 4 files `interface.h` `config.h` `private.h` `program.c`
 * **ServoMotor:** this driver contains the setup settings for the Servo motor.
 * **StepperMotor:** this driver contains the configurable setup settings for the Stepper motor that make you choose the angle and direction of rotation.
 * **EEPROM:** interfacing with the EEPROM memory, sending and receiving data from it.
+
+## Useful Datasheets
+You can find the datasheets that are used to interface with these components [here.](https://drive.google.com/drive/folders/1FAyY9HWqLeRpX-BFYk_BMwRp1JY0xJO1?usp=sharing)
