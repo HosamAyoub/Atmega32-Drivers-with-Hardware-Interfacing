@@ -9,15 +9,6 @@
 #ifndef LED_INTERFACE_H
 #define LED_INTERFACE_H
 
-#include "../../MCAL/DIO/DIO_interface.h"
-#include "../../MCAL/TIMERS/TIMERS_interface.h"
-#include "../../ECUAL/LED/LED_config.h"
-#include "../../ECUAL/LED/LED_interface.h"
-#include "../../ECUAL/LED/LED_private.h"
-#include "../../Utilities/BIT_MATH.h"
-#include "../../Utilities/STD_TYPES.h"
-#include "LED_private.h"
-#include "LED_config.h"
 
 /* This function Initialize LED setup
  * Arguments: ID (0 : NUMBER_OF_LEDS) - PORT (DIO_PORTA - DIO_PORTB - DIO_PORTC - DIO_PORTD) - PIN (DIO_PIN0 : DIO_PIN7)

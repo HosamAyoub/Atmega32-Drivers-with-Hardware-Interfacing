@@ -6,7 +6,13 @@
 /********************			Version: 1.00				*********************************/
 /********************************************************************************************/
 /********************************************************************************************/
+#include "../../LIB/BIT_MATH.h"
+#include "../../LIB/STD_TYPES.h"
+#include "../../MCAL/DIO/DIO_interface.h"
+#include "../../MCAL/TIMERS/TIMERS_interface.h"
 #include "LED_interface.h"
+#include "LED_config.h"
+#include "LED_private.h"
 
 LED_t LEDS[NUMBER_OF_LEDS] = {{NULL}};
 

@@ -6,7 +6,12 @@
 /********************			Version: 1.00				*********************************/
 /********************************************************************************************/
 /********************************************************************************************/
+#include "../../LIB/BIT_MATH.h"
+#include "../../LIB/STD_TYPES.h"
+#include "../DIO/DIO_interface.h"
 #include "EXTI_interface.h"
+#include "EXTI_private.h"
+#include "EXTI_config.h"
 
 static void (*Global_pvInt0NotifcationFunction)(void) = NULL;
 static void (*Global_pvInt1NotifcationFunction)(void) = NULL;

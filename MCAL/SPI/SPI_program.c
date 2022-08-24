@@ -8,6 +8,7 @@
 /********************************************************************************************/
 #include "../../LIB/STD_TYPES.h"
 #include "../../LIB/BIT_MATH.h"
+#include "../DIO/DIO_interface.h"
 #include "SPI_interface.h"
 #include "SPI_private.h"
 #include "SPI_config.h"
@@ -15,6 +16,17 @@
 /*MSB, Prescaler = 16, Leading edge, sample(receive) at leading edge*/
 void SPI_voidMasterInit (void)
 {
+	/*Initializing master pins*/
+	/*SS pin: input floating for slave*/
+	DIO_u8SetPinDirection(DIO_PORTB, DIO_PIN4, DIO_PIN_INPUT);
+	DIO_u8SetPinValue(DIO_PORTB, DIO_PIN4, DIO_PIN_HIGH);
+	/*MOSI pin: master output slave input*/
+	DIO_u8SetPinDirection(DIO_PORTB, DIO_PIN5, DIO_PIN_OUTPUT);
+	/*MISO pin: master input slave output*/
+	DIO_u8SetPinDirection(DIO_PORTB, DIO_PIN6, DIO_PIN_INPUT);
+	/*SCK pin: input for slave*/
+	DIO_u8SetPinDirection(DIO_PORTB, DIO_PIN7, DIO_PIN_OUTPUT);
+
 	/*Set the node to be Master*/
 	SET_BIT(SPCR, SPCR_MSTR);
 	/*Set the MSB to be sent first*/
@@ -33,6 +45,16 @@ void SPI_voidMasterInit (void)
 
 void SPI_voidSlaveInit (void)
 {
+	/*Initializing slave pins*/
+	/*SS pin: input floating for slave*/
+	DIO_u8SetPinDirection(DIO_PORTB, DIO_PIN4, DIO_PIN_INPUT);
+	/*MOSI pin: master output slave input*/
+	DIO_u8SetPinDirection(DIO_PORTB, DIO_PIN5, DIO_PIN_INPUT);
+	/*MISO pin: master input slave output*/
+	DIO_u8SetPinDirection(DIO_PORTB, DIO_PIN6, DIO_PIN_OUTPUT);
+	/*SCK pin: input for slave*/
+	DIO_u8SetPinDirection(DIO_PORTB, DIO_PIN7, DIO_PIN_INPUT);
+
 	/*Set the node to be Slave*/
 	CLR_BIT(SPCR, SPCR_MSTR);
 	/*Set the MSB to be sent first*/

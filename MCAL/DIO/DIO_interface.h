@@ -9,11 +9,6 @@
 #ifndef DIO_INTERFACE_H
 #define DIO_INTERFACE_H
 
-#include "../../Utilities/BIT_MATH.h"
-#include "../../Utilities/STD_TYPES.h"
-#include "DIO_private.h"
-#include "DIO_config.h"
-
 /* This function set the port value to be high or low.
  * Arguments: PORT (DIO_PORTA - DIO_PORTB - DIO_PORTC - DIO_PORTD) - Direction (DIO_PORT_HIGH - DIO_PORT_LOW)
  * Returns: Error states DIO_OK - DIO_ERROR */

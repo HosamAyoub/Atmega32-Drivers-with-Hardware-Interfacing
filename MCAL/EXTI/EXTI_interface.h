@@ -9,12 +9,6 @@
 #ifndef EXTI_INTERFACE_H
 #define EXTI_INTERFACE_H
 
-#include "../../Utilities/BIT_MATH.h"
-#include "../../Utilities/STD_TYPES.h"
-#include "../DIO/DIO_interface.h"
-#include "EXTI_private.h"
-#include "EXTI_config.h"
-
 #define FALLING_EDGE	0
 #define RISING_EDGE		1
 #define LOW_LEVEL		2

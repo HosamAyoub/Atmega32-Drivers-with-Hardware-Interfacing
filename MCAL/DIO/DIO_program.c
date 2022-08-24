@@ -6,7 +6,11 @@
 /********************			Version: 1.10				*********************************/
 /********************************************************************************************/
 /********************************************************************************************/
+#include "../../LIB/STD_TYPES.h"
+#include "../../LIB/BIT_MATH.h"
 #include "DIO_interface.h"
+#include "DIO_private.h"
+#include "DIO_config.h"
 
 u8 DIO_u8SetPortDirection(u8 Copy_u8Port, u8 Copy_u8Direction)
 {

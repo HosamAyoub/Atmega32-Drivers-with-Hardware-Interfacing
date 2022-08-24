@@ -150,27 +150,6 @@ u8 TIMERS_u8Timer0Delay (u32 Copy_u32Delay, u8 Copy_u8Type)
 			Copy_u32Delay -= TIMER0_INSTRUCTIONS_TIME;
 		}
 	}
-	else if (Copy_u8Type == TIMERS_MS)
-	{
-		Copy_u32Delay *= MILLI_SECONDS_SCAL;
-		if (Copy_u32Delay < 2000)
-		{
-			Copy_u32Delay = 1;
-		}
-		else
-		{
-			Copy_u32Delay -= TIMER0_INSTRUCTIONS_TIME;
-		}
-	}
-	else if (Copy_u8Type == TIMERS_S)
-	{
-		Copy_u32Delay *= SECONDS_SCALE;
-		Copy_u32Delay -= TIMER0_INSTRUCTIONS_TIME;
-	}
-	else
-	{
-		return ERROR;
-	}
 	//Check if the user work in the correct mode or not
 	#if ((TIMER0_MODE == TIMER0_CTC_MODE) || (TIMER0_MODE == TIMER0_OVF_MODE))
 		f32 Local_f32TickTime, Local_f32OVFNumbers = 0;

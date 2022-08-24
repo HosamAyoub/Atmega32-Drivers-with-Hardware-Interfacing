@@ -1,23 +1,15 @@
 /********************************************************************************************/
 /********************************************************************************************/
 /********************			Author: Hosam Ayoub			*********************************/
-/********************			Layer: MCAL					*********************************/
-/********************			SWC: GIE					*********************************/
+/********************			Layer: HAL					*********************************/
+/********************			SWC: SERVO					*********************************/
 /********************			Version: 1.00				*********************************/
 /********************************************************************************************/
 /********************************************************************************************/
-#include "../../LIB/BIT_MATH.h"
-#include "../../LIB/STD_TYPES.h"
-#include "GIE_interface.h"
-#include "GIE_private.h"
-#include "GIE_config.h"
+#ifndef HAL_SERVO_INTERFACE_H_
+#define HAL_SERVO_INTERFACE_H_
 
-void GIE_voidEnableGlobalInterrupt(void)
-{
-	SET_BIT(SREG, SREG_I);
-}
+/* This function set the angle for the servo motor */
+u8 SERVO_u8SetAngle (u8 Copy_u8Angle);
 
-void GIE_voidDisableGlobalInterrupt(void)
-{
-	CLR_BIT(SREG, SREG_I);
-}
+#endif
