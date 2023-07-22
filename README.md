@@ -1,7 +1,7 @@
 # Hardware Interfacing with ATmega32
 This repo contains the interface components written in full software layered architecture with configurable settings drivers without any built-in library.
 
-##Sofware Layered Architecture
+## Sofware Layered Architecture
 | Layers | Details |
 | :---------- | :--------------------- |
 | APP | Contains the main logic of the application |
